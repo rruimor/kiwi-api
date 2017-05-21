@@ -1,0 +1,5 @@
+
+/.idea/
+/Gemfile.lock
+/kiwi_api-*.gem
+/config.yaml
