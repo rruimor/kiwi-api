@@ -3,3 +3,4 @@
 /Gemfile.lock
 /kiwi_api-*.gem
 /config.yaml
+/lib/kiwi_api/iata_codes.rb

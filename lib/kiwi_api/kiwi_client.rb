@@ -3,7 +3,7 @@ require 'json'
 require 'date'
 require 'httparty'
 require_relative 'flight_result'
-require_relative 'iata_codes'
+require_relative 'helpers/core_helper'
 
 class MissingArguments < StandardError; end
 
@@ -12,57 +12,49 @@ module KiwiApi
     KIWI_BASE_URL = 'https://api.skypicker.com'
     KIWI_FLIGHTS_PATH = '/flights'
     KIWI_PLACES_PATH = '/places'
+    REQUIRED_PARAMS = %i{origin destination date_from}
 
     # https://api.skypicker.com/places?term=SVQ
 
-    def self.search_flight(params = {})
-      unless %i{origin destination date_from date_to}.all? { |required_param| !params[required_param].nil? }
-        raise MissingArguments.new("The following params are required: origin, destination, date_from")
+    def self.search_flight(origin, destination, date_from, options = {})
+      unless origin && destination && date_from
+        raise MissingArguments.new("The following params are required: #{REQUIRED_PARAMS}")
       end
 
-      query_params = {
-          flyFrom: params[:origin],
-          to: params[:destination],
-          dateFrom: params[:date_from],
-          dateTo: params[:date_to] || params[:date_from],
+      params = {
+          flyFrom: origin,
+          to: destination,
+          dateFrom: date_from,
+          dateTo: options[:date_to] || date_from,
+          directFlights: 1,
+          price_to: options[:max_price_flight] || 150,
+          curr: 'EUR',
+          # dtimefrom: options[:departure_time_from] || '18:00',
+          limit: options[:limit] || 5
           # flyDays: 5,
           # flyDaysType: 'departure',
-          directFlights: 1,
-          price_to: 150,
-          curr: 'EUR',
           # daysInDestinationFrom: 2,
           # returnFlyDays: [0, 1],
-          dtimefrom: '18:00',
           # sort: 'date',
-          limit: params[:limit] || 5
       }
 
-      response = HTTParty.get(KIWI_BASE_URL + KIWI_FLIGHTS_PATH, query: query_params, verify: false)
+      response = HTTParty.get(KIWI_BASE_URL + KIWI_FLIGHTS_PATH, query: params, verify: false)
 
       if response.code == 200
         parsed_response = JSON.parse(response.body)
-        # DateTime.strptime(result['dTime'].to_s, '%s')
-        # airline_code = parsed_response['data'].first['airlines'].first
-
-        parsed_response['data'].map do |flight_result_params|
-          # departure_date_time = DateTime.strptime(flight['dTime'].to_s, '%s')
-          # {
-          #     # from: IATACodes.find_airport_by_code(flight['flyFrom']),
-          #     from: flight['flyFrom'],
-          #     # to: IATACodes.find_airport_by_code(flight['flyTo']),
-          #     to: flight['flyTo'],
-          #     city_to: flight['cityTo'],
-          #     country: flight['countryTo'],
-          #     price: flight['price'],
-          #     departure_time: departure_date_time.strftime('%R'),
-          #     departure_weekly_day: departure_date_time.strftime('%A'),
-          #     departure_date: departure_date_time.strftime('%F'),
-          #     airline: IATACodes.find_airline_by_code(flight['airlines'].first)
-          # }
-          FlightResult.new(flight_result_params)
-        end
+        parsed_response['data'].map { |flight_result_params| FlightResult.new(flight_result_params) }
       else
         puts response.inspect
+      end
+    end
+
+    private
+
+    def parse_date(date)
+      begin
+        Date.parse(date).strftime('%d/%m/%Y')
+      rescue => e
+        raise "Incorrect date value: #{date}"
       end
     end
   end

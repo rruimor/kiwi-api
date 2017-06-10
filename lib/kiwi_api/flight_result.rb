@@ -3,7 +3,7 @@ module KiwiApi
     attr_reader :origin, :destination, :price, :departure_date_time, :arrival_date_time, :airline
 
     def initialize(params = {})
-      @origin = params[['flyFrom']]
+      @origin = params['flyFrom']
       @destination = params['flyTo']
       @price = params['price']
       @departure_date_time = DateTime.strptime(params['dTime'].to_s, '%s') if params['dTime']
