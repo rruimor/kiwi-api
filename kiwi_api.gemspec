@@ -12,7 +12,6 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
   s.test_files  = Dir.glob('{spec/**/*}')
 
-  s.add_runtime_dependency 'httparty'
   s.add_runtime_dependency 'faraday'
   s.add_runtime_dependency 'hashie'
 end

@@ -2,5 +2,7 @@
 /.idea/
 /Gemfile.lock
 /kiwi_api-*.gem
-/config.yaml
-/lib/kiwi_api/iata_codes.rb
+/iata_codes_api/config.yaml
+/iata_codes_api/iata_codes.rb
+/main.rb
+/iata_codes_api/config.yaml.example

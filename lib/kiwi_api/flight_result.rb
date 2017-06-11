@@ -1,26 +1,13 @@
+require 'hashie'
+
 module KiwiApi
-  class FlightResult
-    attr_reader :origin, :destination, :price, :departure_date_time, :arrival_date_time, :airline
-
+  class FlightResult < Hashie::Mash
     def initialize(params = {})
-      @origin = params['flyFrom']
-      @destination = params['flyTo']
-      @price = params['price']
-      @departure_date_time = DateTime.strptime(params['dTime'].to_s, '%s') if params['dTime']
-      @arrival_date_time = DateTime.strptime(params['aTime'].to_s, '%s') if params['aTime']
-      @airline = params['airlines'].first if params['airlines']
+      super(params.rubify_keys)
     end
 
-    def departure_time
-      departure_date_time.strftime('%R')
-    end
-
-    def departure_weekly_day
-      departure_date_time.strftime('%A')
-    end
-
-    def departure_date
-      departure_date_time.strftime('%F')
+    def departure_date_time
+      @departure_date_time ||= Time.at(d_time)
     end
   end
 end
