@@ -5,8 +5,6 @@ require 'faraday'
 require_relative 'flight_result'
 require_relative 'helpers/core_helper'
 
-class MissingArguments < StandardError; end
-
 module KiwiApi
   module Client
     KIWI_BASE_URL = 'https://api.skypicker.com'
@@ -49,10 +47,12 @@ module KiwiApi
       params = {
         fly_from: fly_from,
         to: to,
-        date_rom: date_from,
+        date_from: date_from,
         date_to: extra_params[:date_to] || date_from,
         direct_flights: 1,
-      }.merge(extra_params).camelize_keys
+      }.merge(extra_params)
+
+      params = CoreHelper.camelize_keys(params)
 
       response = conn.get(KIWI_FLIGHTS_PATH, params)
 
