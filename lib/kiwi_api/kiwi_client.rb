@@ -50,7 +50,9 @@ module KiwiApi
         date_from: date_from,
         date_to: extra_params[:date_to] || date_from,
         direct_flights: 1,
-      }.merge(extra_params).camelize_keys
+      }.merge(extra_params)
+
+      params = CoreHelper.camelize_keys(params)
 
       response = conn.get(KIWI_FLIGHTS_PATH, params)
 

@@ -1,9 +1,10 @@
 require 'hashie'
+require_relative 'helpers/core_helper'
 
 module KiwiApi
   class FlightResult < Hashie::Mash
     def initialize(params = {})
-      super(params.rubify_keys)
+      super(CoreHelper.rubify_keys(params))
     end
 
     def departure_date_time
