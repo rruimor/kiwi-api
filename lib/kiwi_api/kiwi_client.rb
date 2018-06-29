@@ -49,7 +49,7 @@ module KiwiApi
       params = {
         fly_from: fly_from,
         to: to,
-        date_rom: date_from,
+        date_from: date_from,
         date_to: extra_params[:date_to] || date_from,
         direct_flights: 1,
       }.merge(extra_params).camelize_keys
