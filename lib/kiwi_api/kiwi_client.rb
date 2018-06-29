@@ -5,8 +5,6 @@ require 'faraday'
 require_relative 'flight_result'
 require_relative 'helpers/core_helper'
 
-class MissingArguments < StandardError; end
-
 module KiwiApi
   module Client
     KIWI_BASE_URL = 'https://api.skypicker.com'
